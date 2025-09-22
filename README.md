@@ -5,7 +5,7 @@ I love Spotify, but I hate it when I want to listen to a song and can't remember
 ## What this project is
 A small web app that helps you find and rank an artist's albums using a tiny machine-learned model. The frontend (Vite + React) lists albums and shows a model score under each album card, so you can see what other people think about it. The backend (FastAPI) talks to Spotify, computes scores with a simple trainable linear model (NumPy), and exposes a /recommend API that returns ranked albums and scores.
 
-## High-level architecture
+## Architecture
 - Frontend
   - `src/App.jsx` — search box, fetches artist albums, asks the backend for model scores, and displays album cards (image, title, release date, link, model score).
   - Built with Vite + React and React-Bootstrap.
@@ -20,7 +20,7 @@ A small web app that helps you find and rank an artist's albums using a tiny mac
   3. Backend fetches albums, computes scores (using the trained model if available; otherwise uses a heuristic), and returns `ranked` albums with `score`.
   4. Frontend merges scores into album objects and displays "Model score: X.X — higher is better".
 
-## How the score is determined (concise, accurate)
+## How the score is determined
 - Features extracted per album:
   - `popularity` — Spotify album popularity (0–100). If missing, treated as 0.
   - `age_days` — age computed from the album release year (days since year-01-01 of release).
@@ -39,7 +39,7 @@ A small web app that helps you find and rank an artist's albums using a tiny mac
   - scaled to 0..100 and rounded to 2 decimals.
 - The frontend displays a single decimal (e.g., 27.8) with the human hint "higher is better". The backend values are merged into `album.score` before display.
 
-## Important details / edge cases
+## Important details
 - Popularity often missing in the artist-albums response; missing popularity becomes 0, which can bias scores toward newer albums or those with more tracks.
 - Age uses only the year for release_date parsing, so exact day/month is ignored (coarse age).
 - Scores are normalized per-request (min-max across the albums returned for the artist), so values are relative to the set of albums returned, not an absolute global scale.
@@ -84,18 +84,5 @@ A small web app that helps you find and rank an artist's albums using a tiny mac
    npm run dev
    ```
 5. Open the Vite URL (usually http://localhost:5173) and search for an artist.
-
-## Development notes and next improvements
-- Improve features: fetch full album objects to get `popularity`, compute average track popularity, pull audio features (danceability/energy/valence), use them as model inputs.
-- Better model: gather labeled user data, use regularized regression or a small tree model (if wheels available) for better performance.
-- UI improvements: color-coded score badges, sort options, and a small “why this” tooltip that explains the main contributors (popularity vs. recency).
-- Persistence: use a DB or simple file store for training data and votes.
-
-## Where to look in the code
-- Frontend: `src/App.jsx`
-- Backend API: `backend/backend/main.py`
-- Spotify helper: `backend/backend/spotify_client.py`
-- Model logic: `backend/backend/model.py`
-- Environment examples: `backend/.env` (not committed, keep secrets)
 
 ---
