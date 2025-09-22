@@ -46,12 +46,6 @@ A small web app that helps you find and rank an artist's albums using a tiny mac
 - If predicted values are nearly identical (no variance), the code avoids divide-by-zero and scales differently (returns pred * 100).
 - Final numeric rounding happens on the backend (2 decimals) and frontend shows 1 decimal.
 
-## How you can improve score quality (quick suggestions)
-- Fetch full album objects (GET /albums/{id}) to get accurate `popularity` and other fields.
-- Add more features: average track popularity, audio features (energy/valence), editorial metadata.
-- Collect labeled training data (user likes/dislikes) and retrain the linear model with real labels.
-- Change weighting or model family (e.g., regularized regression, tree models) if data grows.
-
 ## API
 - GET /recommend?artist_id={spotify_artist_id}
   - Response: JSON with `recommended` and `ranked`. `ranked` is an array of entries shaped as:
@@ -91,22 +85,6 @@ A small web app that helps you find and rank an artist's albums using a tiny mac
    ```
 5. Open the Vite URL (usually http://localhost:5173) and search for an artist.
 
-## Troubleshooting tips
-- If `npm` fails on PowerShell due to ExecutionPolicy: run npm using `npm.cmd` or set policy:
-  ```powershell
-  Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-  ```
-- If backend returns CORS errors: backend already sets CORS to allow origins=["*"] in the current code; ensure the backend server is running and reachable by the frontend.
-- If scores don't appear:
-  - Confirm backend is running and that the frontend can call `VITE_BACKEND_URL/recommend`.
-  - Check browser devtools Network tab to inspect the `/recommend` request and response shape.
-- If popularity is consistently 0:
-  - The artist albums endpoint does not include album `popularity` always. Improving scoring requires fetching full album objects (`GET /albums/{id}`) to obtain popularity and track-level metadata.
-
-## Security notes
-- Never commit `SPOTIFY_CLIENT_SECRET` or `VITE_CLIENT_SECRET` to a public repo.
-- Prefer doing all Spotify-authenticated calls on the backend so secrets remain server-side. If you want, I can remove client-credentials usage from the frontend and add a backend artist-search endpoint.
-
 ## Development notes and next improvements
 - Improve features: fetch full album objects to get `popularity`, compute average track popularity, pull audio features (danceability/energy/valence), use them as model inputs.
 - Better model: gather labeled user data, use regularized regression or a small tree model (if wheels available) for better performance.
@@ -121,16 +99,3 @@ A small web app that helps you find and rank an artist's albums using a tiny mac
 - Environment examples: `backend/.env` (not committed, keep secrets)
 
 ---
-
-If you want I can:
-- Paste this as a `README.md` file in the repo (I can create it).
-- Add a short “how the UI displays the score” screenshot/notes or color-coding logic.
-- Replace client-side Spotify auth and move artist lookup to the backend (recommended for security).
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
